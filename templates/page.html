@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<form>
+    <h4>ШИФРОВАНИЕ ТЕСТА</h4>
+</form>
+
+{% if content.role == 'wr' %}
+    <form>
+        <h2>ШИФРОВАНИЕ ТЕСТА</h2>
+    </form>
+{% endif %}
+
+<form method="POST" action="/">
+    <input type="submit" value="EXIT">
+</form>
+
+</body>
+</html>
