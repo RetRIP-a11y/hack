@@ -11,7 +11,7 @@ from natasha import (
     Doc,
     DatesExtractor, AddrExtractor)
 
-text = textract.process("upload/01.01.2021.doc")
+text = textract.process("upload/01.01.2021.docx")
 text = text.decode(encoding='utf-8')
 
 segmenter = Segmenter()
@@ -37,20 +37,27 @@ for paragraph in text:
     name = name_ex(paragraph)
     for i in name:
         if i.fact.first is not None and i.fact.last is not None and i.fact.middle is not None:
-            replaceDic.update({paragraph[i.start:i.stop]: '88'})
+            line = doc.text[i.start:i.stop]
+            result = '!NAME!'
+            replaceDic.update({paragraph[i.start:i.stop]: result})
     date = date_ex(paragraph)
     for j in date:
         line = doc.text[j.start:j.stop]
         result = ' !DATA! '
+        replaceDic.update({line: result})
+    addr = ad_ex(paragraph)
+    for q in addr:
+        line = doc.text[q.start:q.stop]
+        result = ' !ADDR! '
         replaceDic.update({line: result})
 
 
 
 text = textract.process("upload/01.01.2021.doc")
 text = text.decode(encoding='utf-8')
-
+#
 for key, val in replaceDic.items():
     text = text.replace(key, val)
-print(text)
-# with open('upload/fin.doc', 'w') as f:
-#     f.write(finT)
+
+with open('upload/fin.doc', 'w') as f:
+    f.write(text)
