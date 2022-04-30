@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request
 import sqlite3
 import hashlib
+
 app = Flask(__name__, template_folder="templates")
 conn = sqlite3.connect('users.db', check_same_thread=False)
 cur = conn.cursor()
@@ -24,10 +25,18 @@ def check():
             login = result[0][1]
             password = result[0][2]
             role = result[0][3]
-            result = {'id':id, 'login':login, 'password':password, 'role':role}
+            result = {'id': id, 'login': login, 'password': password, 'role': role}
             return render_template('page.html', content=result)
         else:
             return render_template('index.html')
+
+
+@app.route('/txt_encrypt', methods=('GET', 'POST'))
+def txt_encrypt():
+    if request.method == 'POST':
+        file = request.form['file']
+        print(file)
+    return render_template('page.html', content='11')
 
 
 if __name__ == "__main__":

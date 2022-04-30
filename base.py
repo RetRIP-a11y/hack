@@ -1,3 +1,4 @@
+import textract
 from natasha import (
     Segmenter,
     MorphVocab,
@@ -10,19 +11,21 @@ from natasha import (
     Doc,
     DatesExtractor, AddrExtractor)
 import hashlib
-import re
+
+text = textract.process("upload/01.01.2021.docx")
+text = text.decode(encoding='utf-8')
 
 segmenter = Segmenter()
 morph_vocab = MorphVocab()
-
 emb = NewsEmbedding()
 morph_tagger = NewsMorphTagger(emb)
-syntax_parser = NewsSyntaxParser(emb)
 ner_tagger = NewsNERTagger(emb)
-names_extractor = NamesExtractor(morph_vocab)
-date_extractor = DatesExtractor(morph_vocab)
-addr_extractor = AddrExtractor(morph_vocab)
+# addr_extractor = AddrExtractor(morph_vocab)
 
+
+name_ex = NamesExtractor(morph_vocab)
+ad_ex = AddrExtractor(morph_vocab)
+date_ex = DatesExtractor(morph_vocab)
 
 def encrypt(line, change: int):
     texts = hashlib.md5(line.encode()).hexdigest()
@@ -41,24 +44,43 @@ def encrypt(line, change: int):
     final = ''.join(result_list)
     return final
 
+replaceDic = {}
+text = text.split('\n')
+for paragraph in text:
+    doc = Doc(paragraph)
+    doc.segment(segmenter)
+    doc.tag_morph(morph_tagger)
+    doc.tag_ner(ner_tagger)
 
-with open('upload/temp.txt', 'r') as file:
-    text = file.read()
-    text = text.split('\n')
-    for page in text:
-        doc = Doc(page)
-        doc.segment(segmenter)
-        doc.tag_morph(morph_tagger)
-        doc.tag_ner(ner_tagger)
+    name = name_ex(paragraph)
+    for i in name:
+        if i.fact.first is not None and i.fact.last is not None and i.fact.middle is not None:
+            line = doc.text[i.start:i.stop]
+            result = encrypt(line, 3)
+            replaceDic.update({line: result})
+    date = date_ex(paragraph)
+    for j in date:
+        line = doc.text[j.start:j.stop]
+        result = encrypt(line, 3)
+        replaceDic.update({line: result})
+    addr = ad_ex(paragraph)
+    for q in addr:
+        line = doc.text[q.start:q.stop]
+        result = encrypt(line, 3)
+        replaceDic.update({line: result})
 
-        line = doc.text
-        greps_name = ['\w\.\w\. \w*', '\w* \w\.\w\.', '\w\.\w\.\w.*', '\w.*\W']
-        greps_date = ['\d{2}\.\d{2}\.\d{4}', '\d{2} \w* \d{4}']
-        for grep in greps_name:
-            if re.search(grep, line) != None:
-                print('NAME  --  ', re.search(grep, line).group(0))
-                print('-'*30)
-        for grep in greps_date:
-            if re.search(grep, line) != None:
-                print('DATE  --  ', re.search(grep, line).group(0))
-                print('-'*30)
+
+text = textract.process("upload/01.01.2021.doc")
+text = text.decode(encoding='utf-8')
+#
+for key, val in replaceDic.items():
+    text = text.replace(key, val)
+
+with open('upload/fin.txt', 'w') as f_txt:
+    f_txt.write(text)
+
+with open('upload/key.txt', 'w') as f_key:
+    keys = ''
+    for key, val in replaceDic.items():
+        keys = keys + key + '|' + val + '\n'
+    f_key.write(keys)

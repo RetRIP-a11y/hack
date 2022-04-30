@@ -6,13 +6,16 @@
 </head>
 <body>
 
-<form>
+<form action="/txt_encrypt" method="post">
     <h4>ШИФРОВАНИЕ ТЕСТА</h4>
+    <input name="file" type="file">
+    <br>
+    <input type="submit" value="Отправить">
 </form>
 
 {% if content.role == 'wr' %}
     <form>
-        <h2>ШИФРОВАНИЕ ТЕСТА</h2>
+        <h4>ДЕШИФРОВАНИЕ ТЕСТА</h4>
     </form>
 {% endif %}
 
