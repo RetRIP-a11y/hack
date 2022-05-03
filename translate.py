@@ -1,14 +1,16 @@
-with open('upload/fin.txt', 'r') as file_text:
-    with open('upload/key.txt', 'r') as file_key:
-        key = file_key.read()
-        text = file_text.read()
-        line = key.split('\n')
-        for i in reversed(range(0, len(line) - 1)):
-            change = line[i]
-            change = change.split('|')
-            word = change[0]
-            hash = change[1]
-            alias = change[2]
-            text = text.replace(alias, word)
-with open('upload/translate.txt', 'w') as file:
-    file.write(text)
+import textract
+
+text = textract.process("upload/fin.txt")
+text = text.decode(encoding='utf-8')
+# print(text)
+with open('upload/key.txt', 'r') as f:
+    txt = f.read()
+    txt = txt.split('\n')
+    for line in txt:
+        line = line.split('|')
+        try:
+            text = text.replace(line[1], line[0])
+        except:
+            pass
+with open('upload/decrypt.doc', 'w') as decrypt_t:
+    decrypt_t.write(text)

@@ -20,12 +20,12 @@ morph_vocab = MorphVocab()
 emb = NewsEmbedding()
 morph_tagger = NewsMorphTagger(emb)
 ner_tagger = NewsNERTagger(emb)
-# addr_extractor = AddrExtractor(morph_vocab)
 
 
 name_ex = NamesExtractor(morph_vocab)
 ad_ex = AddrExtractor(morph_vocab)
 date_ex = DatesExtractor(morph_vocab)
+
 
 def encrypt(line, change: int):
     texts = hashlib.md5(line.encode()).hexdigest()
@@ -43,6 +43,7 @@ def encrypt(line, change: int):
                 result_list[i] = line2[i - len(string) - 1 + change]
     final = ''.join(result_list)
     return final
+
 
 replaceDic = {}
 text = text.split('\n')
@@ -68,7 +69,6 @@ for paragraph in text:
         line = doc.text[q.start:q.stop]
         result = encrypt(line, 3)
         replaceDic.update({line: result})
-
 
 text = textract.process("upload/01.01.2021.doc")
 text = text.decode(encoding='utf-8')

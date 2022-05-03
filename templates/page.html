@@ -3,10 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+
+    <style>
+   .crypto{
+   display: flex;
+   flex-direction: row;
+   }
+   .mark{
+   width: 600px;
+   heights: 760px;
+   border: 2px solid green;
+   font-size:12px;
+   }
+   .orange {
+        background: orange;
+    }
+  </style>
 </head>
 <body>
-<p>{{content}}</p>
-
 <form action="/upload_f" enctype="multipart/form-data" method="POST">
    <p><input type="file" name="file">
    <input type="submit" value="Отправить"></p>
@@ -16,5 +30,53 @@
     <input type="submit" value="EXIT">
 </form>
 
+<div class="crypto">
+    <div>
+        <form action="/upload_f" method="POST">
+            <textarea style="resize:none" rows="50" cols="80">{{ content }}</textarea>
+        </form>
+    </div>
+
+    <div>
+        <p class="mark">{{content}}</p>
+    </div>
+
+    <div>
+        <form action="/upload_f" method="POST">
+            <textarea style="resize:none" rows="50" cols="80" readonly ><p>ЗАШИФРОВАННАЯ ХУЕТА</p></textarea>
+        </form>
+    </div>
+</div>
+
+<script>
+<!--    let patterns = [-->
+<!--  {text: "друг", classes: ['orange']},-->
+<!--];-->
+
+var str = document.documentElement.innerText;
+var regExp = /!.*!/g;
+separator = '|'
+<!--var result = str.match(regExp);-->
+var result = str.split(separator)
+for (const res in result)
+{
+    console.log(result[res]);
+}
+
+
+
+<!--const marker = ( text, patterns ) => {-->
+<!--  return patterns.reduce( ( result, current ) => {-->
+<!--    let regexp = new RegExp(current.text, 'g');-->
+<!--    let style = current.classes.join(' ');-->
+
+<!--    return result.replace( regexp, `<span class="${ style }">${ current.text }</span>` );-->
+<!--  }, text );-->
+<!--}-->
+
+<!--let text = document.body.innerHTML;-->
+
+<!--document.body.innerHTML = marker( text, patterns );-->
+</script>
 </body>
 </html>

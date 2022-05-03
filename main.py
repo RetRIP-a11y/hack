@@ -2,7 +2,9 @@ from flask import Flask, render_template, request
 import sqlite3
 import hashlib
 
+import docx2txt
 import textract
+import test
 
 from werkzeug.utils import secure_filename
 import os
@@ -48,8 +50,20 @@ def check():
 def upload():
     if request.method == 'POST':
         file = request.files['file']
-        text = file
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            try:
+                text = docx2txt.process('upload/test/'+filename)
+                text = test.one(text)
+            except:
+                text = textract.process("upload/test/"+filename)
+                text = text.decode(encoding='utf-8')
+                text = test.one(text)
+            finally:
+                pass
         return render_template('page.html', content=text)
+
 
 if __name__ == "__main__":
     app.run(debug=True, port=1234)
