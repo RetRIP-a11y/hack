@@ -44,19 +44,6 @@ def check():
             return render_template('index.html')
 
 
-# @app.route('/upload_f', methods=('GET', 'POST'))
-# def upload():
-#     if request.method == 'POST':
-#         file = request.files['file']
-#         if file and allowed_file(file.filename):
-#             filename = secure_filename(file.filename)
-#             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-#             # text = textract.process("upload/test/"+filename)
-#             # text = text.decode(encoding='utf-8')
-#             text = 'GOOD'
-#         else:
-#             text = 'ERROR'
-#         return render_template('page.html', content=text)
 @app.route('/upload_f', methods=('GET', 'POST'))
 def upload():
     if request.method == 'POST':
