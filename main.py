@@ -2,10 +2,23 @@ from flask import Flask, render_template, request
 import sqlite3
 import hashlib
 
+import textract
+
+from werkzeug.utils import secure_filename
+import os
+
 app = Flask(__name__, template_folder="templates")
 conn = sqlite3.connect('users.db', check_same_thread=False)
 cur = conn.cursor()
 
+UPLOAD_FOLDER = 'upload/test'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+ALLOWED_EXTENSIONS = set(['txt', 'doc', 'docx'])
+
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
 @app.route('/', methods=('GET', 'POST'))
 def index():
@@ -31,13 +44,25 @@ def check():
             return render_template('index.html')
 
 
-@app.route('/txt_encrypt', methods=('GET', 'POST'))
-def txt_encrypt():
+# @app.route('/upload_f', methods=('GET', 'POST'))
+# def upload():
+#     if request.method == 'POST':
+#         file = request.files['file']
+#         if file and allowed_file(file.filename):
+#             filename = secure_filename(file.filename)
+#             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+#             # text = textract.process("upload/test/"+filename)
+#             # text = text.decode(encoding='utf-8')
+#             text = 'GOOD'
+#         else:
+#             text = 'ERROR'
+#         return render_template('page.html', content=text)
+@app.route('/upload_f', methods=('GET', 'POST'))
+def upload():
     if request.method == 'POST':
-        file = request.form['file']
-        print(file)
-    return render_template('page.html', content='11')
-
+        file = request.files['file']
+        text = file
+        return render_template('page.html', content=text)
 
 if __name__ == "__main__":
     app.run(debug=True, port=1234)
