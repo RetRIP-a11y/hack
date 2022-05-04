@@ -34,5 +34,5 @@ def one(text):
         if i.fact.first is not None and i.fact.last is not None and i.fact.middle is not None:
             dic.update({text[i.start:i.stop]: (i.start, i.stop)})
     for key, val in dic.items():
-        text = text.replace(key, '''|'''+text[val[0]:val[1]]+'''|''')
+        text = text.replace(key, '''|#'''+text[val[0]:val[1]]+'''#|''')
     return text

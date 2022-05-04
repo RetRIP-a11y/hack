@@ -13,10 +13,17 @@
    width: 600px;
    heights: 760px;
    border: 2px solid green;
-   font-size:12px;
+   font-size:10px;
+   margin:0px;
+   }
+   .mark p{
+   margin:0px;
    }
    .orange {
         background: orange;
+    }
+    .red {
+        background: red;
     }
   </style>
 </head>
@@ -37,8 +44,13 @@
         </form>
     </div>
 
-    <div>
-        <p class="mark">{{content}}</p>
+    <div class="mark">
+        {% if not content.id %}
+        {% set cont = content.split('\n') %}
+        {% for item in cont %}
+        <p >{{item}}</p>
+        {% endfor %}
+        {% endif %}
     </div>
 
     <div>
@@ -49,21 +61,25 @@
 </div>
 
 <script>
-<!--    let patterns = [-->
-<!--  {text: "друг", classes: ['orange']},-->
+<!--let patterns = [-->
+<!--{text: "друг", classes: ['orange']},-->
 <!--];-->
 
-var str = document.documentElement.innerText;
-var regExp = /!.*!/g;
-separator = '|'
-<!--var result = str.match(regExp);-->
-var result = str.split(separator)
-for (const res in result)
-{
-    console.log(result[res]);
-}
-
-
+<!--var str = document.documentElement.innerText;-->
+<!--separator = '|'-->
+<!--var result = str.split(separator)-->
+<!--for (const res in result)-->
+<!--{-->
+<!--    line = result[res];-->
+<!--    var regExp = /#(.*)#/g;-->
+<!--    if (line.match(regExp) != null){-->
+<!--        var string = line.match(regExp)[0]-->
+<!--        string = string.slice(1, -1)-->
+<!--        patterns.push({text: string, classes: ['red']});-->
+<!--        }-->
+<!--}-->
+<!--console.log(patterns)-->
+<!--&lt;!&ndash;patterns.push({text: "В.П. Климову", classes: ['red']});&ndash;&gt;-->
 
 <!--const marker = ( text, patterns ) => {-->
 <!--  return patterns.reduce( ( result, current ) => {-->
@@ -80,3 +96,9 @@ for (const res in result)
 </script>
 </body>
 </html>
+
+
+
+
+
+
