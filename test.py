@@ -1,5 +1,7 @@
 import textract
-
+from ipymarkup import show_span_box_markup
+from ipymarkup.palette import palette, BLUE, RED, GREEN, BROWN
+from ipymarkup import format_span_box_markup
 from natasha import (
     Segmenter,
     MorphVocab,
@@ -12,7 +14,6 @@ from natasha import (
     Doc,
     DatesExtractor, AddrExtractor)
 import hashlib
-from ipymarkup import show_span_ascii_markup as show_markup
 
 segmenter = Segmenter()
 morph_vocab = MorphVocab()
@@ -23,16 +24,25 @@ name_ex = NamesExtractor(morph_vocab)
 ad_ex = AddrExtractor(morph_vocab)
 date_ex = DatesExtractor(morph_vocab)
 
+
 def one(text):
-    dic ={}
+    NameList = []
     doc = Doc(text)
     doc.segment(segmenter)
     doc.tag_morph(morph_tagger)
     doc.tag_ner(ner_tagger)
     name = name_ex(text)
+    date = date_ex(text)
+    addr = ad_ex(text)
     for i in name:
         if i.fact.first is not None and i.fact.last is not None and i.fact.middle is not None:
-            dic.update({text[i.start:i.stop]: (i.start, i.stop)})
-    for key, val in dic.items():
-        text = text.replace(key, '''|#'''+text[val[0]:val[1]]+'''#|''')
-    return text
+            NameList.append((i.start, i.stop, 'PER'))
+    for q in addr:
+        NameList.append((q.start, q.stop, 'LOC'))
+    for j in date:
+        NameList.append((j.start, j.stop, 'DATE'))
+    return ', '.join(list(format_span_box_markup(text, NameList)))
+
+# text = textract.process("upload/01.01.2021.doc")
+# text = text.decode(encoding='utf-8')
+# one(text)

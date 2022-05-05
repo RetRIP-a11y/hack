@@ -1,15 +1,17 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, session, send_from_directory
 import sqlite3
 import hashlib
 
 import docx2txt
 import textract
 import test
+import base
 
 from werkzeug.utils import secure_filename
 import os
 
 app = Flask(__name__, template_folder="templates")
+app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 conn = sqlite3.connect('users.db', check_same_thread=False)
 cur = conn.cursor()
 
@@ -21,6 +23,7 @@ ALLOWED_EXTENSIONS = set(['txt', 'doc', 'docx'])
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
+
 
 @app.route('/', methods=('GET', 'POST'))
 def index():
@@ -41,7 +44,9 @@ def check():
             password = result[0][2]
             role = result[0][3]
             result = {'id': id, 'login': login, 'password': password, 'role': role}
-            return render_template('page.html', content=result)
+            session['role'] = role
+
+            return render_template('page.html')
         else:
             return render_template('index.html')
 
@@ -54,15 +59,22 @@ def upload():
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             try:
-                text = docx2txt.process('upload/test/'+filename)
-                text = test.one(text)
+                text = docx2txt.process('upload/test/' + filename)
+                text_mark = test.one(text)
+                text_encr = base.markup(text)
             except:
-                text = textract.process("upload/test/"+filename)
+                text = textract.process("upload/test/" + filename)
                 text = text.decode(encoding='utf-8')
-                text = test.one(text)
+                text_mark = test.one(text)
+                text_encr = base.markup(text)
             finally:
                 pass
-        return render_template('page.html', content=text)
+        return render_template('page.html', content=text_mark, cryptoTxt=text_encr, role=session['role'])
+
+
+@app.route('/download/<filename>')
+def download(filename):
+    return send_from_directory('upload/test', filename, as_attachment=True)
 
 
 if __name__ == "__main__":

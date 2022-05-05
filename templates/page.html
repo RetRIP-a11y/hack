@@ -3,27 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-
     <style>
    .crypto{
    display: flex;
    flex-direction: row;
    }
-   .mark{
-   width: 600px;
-   heights: 760px;
-   border: 2px solid green;
-   font-size:10px;
-   margin:0px;
-   }
-   .mark p{
-   margin:0px;
-   }
-   .orange {
-        background: orange;
-    }
-    .red {
-        background: red;
+   .textarea
+   {
+    -moz-appearance: textfield-multiline;
+    -webkit-appearance: textarea;
+    border: 1px solid gray;
+    font: medium -moz-fixed;
+    font: -webkit-small-control;
+    height: 28px;
+    overflow: auto;
+    padding: 2px;
+    resize: both;
+    width: 590px;
+    height: 760px;
     }
   </style>
 </head>
@@ -33,67 +30,20 @@
    <input type="submit" value="Отправить"></p>
 </form>
 
+Скачать файл:
+<a href="{{ url_for('download', filename='finaly.txt') }}">Скачать</a>
+
+
 <form method="POST" action="/">
     <input type="submit" value="EXIT">
 </form>
 
 <div class="crypto">
-    <div>
-        <form action="/upload_f" method="POST">
-            <textarea style="resize:none" rows="50" cols="80">{{ content }}</textarea>
-        </form>
-    </div>
-
-    <div class="mark">
-        {% if not content.id %}
-        {% set cont = content.split('\n') %}
-        {% for item in cont %}
-        <p >{{item}}</p>
-        {% endfor %}
-        {% endif %}
-    </div>
-
-    <div>
-        <form action="/upload_f" method="POST">
-            <textarea style="resize:none" rows="50" cols="80" readonly ><p>ЗАШИФРОВАННАЯ ХУЕТА</p></textarea>
-        </form>
-    </div>
+    <div class="textarea" contenteditable ><per>{{content|safe}}</per></div>
+    {% if role == 'wr' %}
+        <div class="textarea" contenteditable ><per>{{cryptoTxt|safe}}</per></div>
+    {% endif %}
 </div>
-
-<script>
-<!--let patterns = [-->
-<!--{text: "друг", classes: ['orange']},-->
-<!--];-->
-
-<!--var str = document.documentElement.innerText;-->
-<!--separator = '|'-->
-<!--var result = str.split(separator)-->
-<!--for (const res in result)-->
-<!--{-->
-<!--    line = result[res];-->
-<!--    var regExp = /#(.*)#/g;-->
-<!--    if (line.match(regExp) != null){-->
-<!--        var string = line.match(regExp)[0]-->
-<!--        string = string.slice(1, -1)-->
-<!--        patterns.push({text: string, classes: ['red']});-->
-<!--        }-->
-<!--}-->
-<!--console.log(patterns)-->
-<!--&lt;!&ndash;patterns.push({text: "В.П. Климову", classes: ['red']});&ndash;&gt;-->
-
-<!--const marker = ( text, patterns ) => {-->
-<!--  return patterns.reduce( ( result, current ) => {-->
-<!--    let regexp = new RegExp(current.text, 'g');-->
-<!--    let style = current.classes.join(' ');-->
-
-<!--    return result.replace( regexp, `<span class="${ style }">${ current.text }</span>` );-->
-<!--  }, text );-->
-<!--}-->
-
-<!--let text = document.body.innerHTML;-->
-
-<!--document.body.innerHTML = marker( text, patterns );-->
-</script>
 </body>
 </html>
 
