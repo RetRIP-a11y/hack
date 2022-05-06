@@ -1,4 +1,3 @@
-import textract
 from natasha import (
     Segmenter,
     MorphVocab,
@@ -7,13 +6,9 @@ from natasha import (
     NewsNERTagger,
     NewsEmbedding,
     NewsMorphTagger,
-    NewsSyntaxParser,
     Doc,
     DatesExtractor, AddrExtractor)
 import hashlib
-
-# text = textract.process("upload/01.01.2021.docx")
-# text = text.decode(encoding='utf-8')
 
 segmenter = Segmenter()
 morph_vocab = MorphVocab()
@@ -45,44 +40,43 @@ def encrypt(line, change: int):
 
 
 def markup(text):
-    replaceDic = {}
-    text = text.split('\n')
-    for paragraph in text:
-        doc = Doc(paragraph)
-        doc.segment(segmenter)
-        doc.tag_morph(morph_tagger)
-        doc.tag_ner(ner_tagger)
+    replaceDic = []
+    doc = Doc(text)
+    doc.segment(segmenter)
+    doc.tag_morph(morph_tagger)
+    doc.tag_ner(ner_tagger)
 
-        name = name_ex(paragraph)
-        for i in name:
-            if i.fact.first is not None and i.fact.last is not None and i.fact.middle is not None:
-                line = doc.text[i.start:i.stop]
-                result = encrypt(line, 3)
-                replaceDic.update({line: result})
-        date = date_ex(paragraph)
-        for j in date:
-            line = doc.text[j.start:j.stop]
+    name = name_ex(text)
+    i_name = 0
+    for i in name:
+        if i.fact.first is not None and i.fact.last is not None and i.fact.middle is not None:
+            line = doc.text[i.start:i.stop]
             result = encrypt(line, 3)
-            replaceDic.update({line: result})
-        addr = ad_ex(paragraph)
-        for q in addr:
-            line = doc.text[q.start:q.stop]
-            result = encrypt(line, 3)
-            replaceDic.update({line: result})
+            replaceDic.append([line, result, 'PER' + str(i_name)])
+            i_name += 1
+    date = date_ex(text)
+    i_date = 0
+    for j in date:
+        line = doc.text[j.start:j.stop]
+        result = encrypt(line, 3)
+        replaceDic.append([line, result, 'DATA' + str(i_date)])
+        i_date += 1
+    i_addr = 0
+    addr = ad_ex(text)
+    for q in addr:
+        line = doc.text[q.start:q.stop]
+        result = encrypt(line, 3)
+        replaceDic.append([line, result, 'LOC' + str(i_addr)])
+        i_addr += 1
 
-    # text = textract.process("upload/01.01.2021.doc")
-    # text = text.decode(encoding='utf-8')
-    #
-    text = '\n'.join(text)
-    for key, val in replaceDic.items():
-        text = text.replace(key, val)
+    for i in replaceDic:
+        text = text.replace(i[0], i[2])
 
-    with open('upload/test/finaly.txt', 'w') as f_txt:
-        f_txt.write(text)
-
-    with open('upload/test/key.txt', 'w') as f_key:
+    with open('upload/test/finaly.txt', 'w') as finaly:
+        finaly.write(text)
+    with open('upload/test/keys.txt', 'w') as key:
         keys = ''
-        for key, val in replaceDic.items():
-            keys = keys + key + '|' + val + '\n'
-        f_key.write(keys)
+        for j in replaceDic:
+            keys = keys + j[0] + '|' + j[1] + '|' + j[2] + '\n'
+        key.write(keys)
     return text

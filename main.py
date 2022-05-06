@@ -4,11 +4,13 @@ import hashlib
 
 import docx2txt
 import textract
-import test
+import markText
 import base
 
 from werkzeug.utils import secure_filename
 import os
+
+import test
 
 app = Flask(__name__, template_folder="templates")
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
@@ -40,11 +42,9 @@ def check():
         result = cur.fetchall()
         if result != []:
             id = result[0][0]
-            login = result[0][1]
-            password = result[0][2]
             role = result[0][3]
-            result = {'id': id, 'login': login, 'password': password, 'role': role}
             session['role'] = role
+            session['id'] = id
 
             return render_template('page.html')
         else:
@@ -53,6 +53,8 @@ def check():
 
 @app.route('/upload_f', methods=('GET', 'POST'))
 def upload():
+    text_encr = ''
+    text_mark = ''
     if request.method == 'POST':
         file = request.files['file']
         if file and allowed_file(file.filename):
@@ -60,22 +62,57 @@ def upload():
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             try:
                 text = docx2txt.process('upload/test/' + filename)
-                text_mark = test.one(text)
-                text_encr = base.markup(text)
+                text_mark = markText.one(text)
+                text_encr = base.markup(text, filename)
             except:
                 text = textract.process("upload/test/" + filename)
                 text = text.decode(encoding='utf-8')
-                text_mark = test.one(text)
+                text_mark = markText.one(text)
                 text_encr = base.markup(text)
             finally:
                 pass
-        return render_template('page.html', content=text_mark, cryptoTxt=text_encr, role=session['role'])
+        return render_template('encrypt.html', content=text_mark, cryptoTxt=text_encr)
 
+
+@app.route('/decrypt_f', methods=('GET', 'POST'))
+def decrypt_f():
+    text_encr = ''
+    text_mark = ''
+    if request.method == 'POST':
+        file = request.files['file']
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            try:
+                text = docx2txt.process('upload/test/' + filename)
+                text_decrypt = test.decrypt(text)
+            except:
+                text = textract.process("upload/test/" + filename)
+                text = text.decode(encoding='utf-8')
+                text_decrypt = test.decrypt(text)
+            finally:
+                pass
+        return render_template('encrypt.html', content=text, cryptoTxt=text_decrypt)
 
 @app.route('/download/<filename>')
 def download(filename):
     return send_from_directory('upload/test', filename, as_attachment=True)
 
 
+@app.route('/encrypt', methods=('GET', 'POST'))
+def encrypt():
+    return render_template('encrypt.html')
+
+
+@app.route('/decrypt', methods=('GET', 'POST'))
+def decrypt():
+    return render_template('decrypt.html')
+
+
+@app.route('/page', methods=('GET', 'POST'))
+def page():
+    return render_template('page.html')
+
+
 if __name__ == "__main__":
-    app.run(debug=True, port=1234)
+    app.run(debug=False, port=1234)
