@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, session, send_from_directory
+from flask import Flask, render_template, request, session, send_from_directory, redirect, url_for
 import sqlite3
 import hashlib
 
@@ -29,7 +29,8 @@ def allowed_file(filename):
 
 @app.route('/', methods=('GET', 'POST'))
 def index():
-    return render_template('index.html', login='', password='')
+    session['auth'] = False
+    return render_template('index.html')
 
 
 @app.route('/check', methods=('GET', 'POST'))
@@ -43,10 +44,11 @@ def check():
         if result != []:
             id = result[0][0]
             role = result[0][3]
+            session['auth'] = True
             session['role'] = role
             session['id'] = id
 
-            return render_template('page.html')
+            return redirect(url_for('encrypt'))
         else:
             return render_template('index.html')
 
@@ -94,6 +96,7 @@ def decrypt_f():
                 pass
         return render_template('encrypt.html', content=text, cryptoTxt=text_decrypt)
 
+
 @app.route('/download/<filename>')
 def download(filename):
     return send_from_directory('upload/test', filename, as_attachment=True)
@@ -101,18 +104,35 @@ def download(filename):
 
 @app.route('/encrypt', methods=('GET', 'POST'))
 def encrypt():
-    return render_template('encrypt.html')
+    if 'auth' in session:
+        return render_template('encrypt.html')
+    else:
+        return render_template('404.html')
 
 
 @app.route('/decrypt', methods=('GET', 'POST'))
 def decrypt():
-    return render_template('decrypt.html')
+    if 'auth' in session:
+        return render_template('decrypt.html')
+    else:
+        return render_template('404.html')
+
 
 
 @app.route('/page', methods=('GET', 'POST'))
 def page():
-    return render_template('page.html')
+    if 'auth' in session:
+        return render_template('page.html')
+    else:
+        return render_template('404.html')
+
+
+@app.route('/logout', methods=('GET', 'POST'))
+def logout():
+    # удаляем имя пользователя из сеанса, если оно есть
+    session.pop('auth', None)
+    return render_template('index.html')
 
 
 if __name__ == "__main__":
-    app.run(debug=False, port=1234)
+    app.run(debug=True, port=1234)

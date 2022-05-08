@@ -1,52 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-    <style>
-   .crypto{
-   display: flex;
-   flex-direction: row;
-   }
-   .textarea
-   {
-    -moz-appearance: textfield-multiline;
-    -webkit-appearance: textarea;
-    border: 1px solid gray;
-    font: medium -moz-fixed;
-    font: -webkit-small-control;
-    height: 28px;
-    overflow: auto;
-    padding: 2px;
-    resize: both;
-    width: 590px;
-    height: 760px;
-    }
-  </style>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-</head>
-<body>
+{% extends 'base.html'%}
 
-<div class="dropdown">
-  <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    МЕНЮ
-  </button>
-  <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
-      <form action="/page" method="POST">
-          <button class="dropdown-item" type="submit">HOME</button>
-      </form>
+{%block title%}Дешифрование{%endblock%}
 
-      <form action="/encrypt" method="POST">
-          <button class="dropdown-item" type="submit">Шифрование</button>
-      </form>
-
-      <form action="/decrypt" method="POST">
-          <button class="dropdown-item" type="submit">Дешифрование</button>
-      </form>
-  </div>
-</div>
-
-<form action="/decrypt_f" enctype="multipart/form-data" method="POST">
+{%block content%}
+<form class="send_form" action="/decrypt_f" enctype="multipart/form-data" method="POST">
    <p><input type="file" name="file">
    <input type="submit" value="Отправить"></p>
 </form>
@@ -54,25 +11,8 @@
 Скачать файл:
 <a href="{{ url_for('download', filename='finaly_decrypt.txt') }}">Скачать</a>
 
-
-<form method="POST" action="/">
-    <input type="submit" value="EXIT">
-</form>
-
 <div class="crypto">
     <div class="textarea" contenteditable ><per>{{content|safe}}</per></div>
     <div class="textarea" contenteditable ><per>{{cryptoTxt|safe}}</per></div>
 </div>
-
-
-<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-</body>
-</html>
-
-
-
-
-
-
+{%endblock%}
