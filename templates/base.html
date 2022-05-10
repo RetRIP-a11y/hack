@@ -38,16 +38,22 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarText">
         <form action="/encrypt" method="POST">
-            <button class="dropdown-item" type="submit">Шифрование</button>
+            <button class="dropdown-item" type="submit">Обезличить</button>
         </form>
-        {% if session['role'] == 'wr' %}
+        {% if session['role'] != 'r' %}
         <form action="/decrypt" method="POST">
-            <button class="dropdown-item" type="submit">Дешифрование</button>
+            <button class="dropdown-item" type="submit">Деобезличить</button>
+        </form>
+        {%endif%}
+        {% if session['role'] == 'root' %}
+        <form action="/users" method="POST">
+            <button class="dropdown-item" type="submit">Управление пользователями</button>
         </form>
         {%endif%}
         <form method="POST" action="/logout">
             <button class="dropdown-item" type="submit">Выход</button>
         </form>
+
     </div>
 </nav>
 

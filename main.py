@@ -10,7 +10,7 @@ import base
 from werkzeug.utils import secure_filename
 import os
 
-import test
+import decrypt
 
 app = Flask(__name__, template_folder="templates")
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
@@ -29,7 +29,8 @@ def allowed_file(filename):
 
 @app.route('/', methods=('GET', 'POST'))
 def index():
-    session['auth'] = False
+    # session['auth'] = False
+    session.pop('auth', None)
     return render_template('index.html')
 
 
@@ -47,8 +48,10 @@ def check():
             session['auth'] = True
             session['role'] = role
             session['id'] = id
-
-            return redirect(url_for('encrypt'))
+            if role == 'root':
+                return redirect(url_for('root'))
+            else:
+                return redirect(url_for('encrypt'))
         else:
             return render_template('index.html')
 
@@ -70,7 +73,7 @@ def upload():
                 text = textract.process("upload/test/" + filename)
                 text = text.decode(encoding='utf-8')
                 text_mark = markText.one(text)
-                text_encr = base.markup(text)
+                text_encr = base.markup(text, filename)
             finally:
                 pass
         return render_template('encrypt.html', content=text_mark, cryptoTxt=text_encr)
@@ -87,11 +90,11 @@ def decrypt_f():
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             try:
                 text = docx2txt.process('upload/test/' + filename)
-                text_decrypt = test.decrypt(text)
+                text_decrypt = decrypt.decrypt(text)
             except:
                 text = textract.process("upload/test/" + filename)
                 text = text.decode(encoding='utf-8')
-                text_decrypt = test.decrypt(text)
+                text_decrypt = decrypt.decrypt(text)
             finally:
                 pass
         return render_template('encrypt.html', content=text, cryptoTxt=text_decrypt)
@@ -107,7 +110,7 @@ def encrypt():
     if 'auth' in session:
         return render_template('encrypt.html')
     else:
-        return render_template('404.html')
+        return redirect(url_for('index'))
 
 
 @app.route('/decrypt', methods=('GET', 'POST'))
@@ -115,16 +118,48 @@ def decrypt():
     if 'auth' in session:
         return render_template('decrypt.html')
     else:
-        return render_template('404.html')
+        return redirect(url_for('index'))
 
 
-
-@app.route('/page', methods=('GET', 'POST'))
-def page():
+@app.route('/root', methods=('GET', 'POST'))
+def root():
     if 'auth' in session:
-        return render_template('page.html')
+        return render_template('root.html')
     else:
-        return render_template('404.html')
+        return redirect(url_for('index'))
+
+
+@app.route('/users', methods=('GET', 'POST'))
+def users():
+    if 'auth' in session:
+        sql = "SELECT * FROM users"
+        cur.execute(sql)
+        result = cur.fetchall()
+        return render_template('users.html', content=result)
+    else:
+        return redirect(url_for('index'))
+
+
+@app.route('/delete', methods=('GET', 'POST'))
+def delete():
+    if 'auth' in session and session['role'] == 'root':
+        idForDelete = request.form['dlt_btn']
+        sql = "DELETE FROM users WHERE id = " + str(idForDelete) + ";"
+        cur.execute(sql)
+        conn.commit()
+        return redirect(url_for('users'))
+
+
+@app.route('/create', methods=('GET', 'POST'))
+def create():
+    if 'auth' in session and session['role'] == 'root':
+        new_login = request.form['login']
+        new_passsword = hashlib.md5(request.form['password'].encode()).hexdigest()
+        new_role = request.form['role']
+        sql = "INSERT INTO users(login, password, role) VALUES(" + "'" + new_login + "'" + ', ' + "'" + new_passsword + "'" + ', ' + "'" + new_role + "'" + ");"
+        cur.execute(sql)
+        conn.commit()
+        return redirect(url_for('users'))
 
 
 @app.route('/logout', methods=('GET', 'POST'))
@@ -132,6 +167,7 @@ def logout():
     # удаляем имя пользователя из сеанса, если оно есть
     session.pop('auth', None)
     return render_template('index.html')
+
 
 
 if __name__ == "__main__":

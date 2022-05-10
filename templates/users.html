@@ -1,0 +1,47 @@
+{% extends 'base.html'%}
+
+{%block title%}CONTROL USERS{%endblock%}
+
+
+{%block content%}
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>id</th>
+            <th>Login</th>
+            <th>Role</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in content %}
+            <tr>
+                <th scope="row">{{item[0]}}</th>
+                <td>{{item[1]}}</td>
+                <td>{{item[3]}}</td>
+                <td>
+                    <form method="POST" action="delete">
+                        <button value={{item[0]}} name ="dlt_btn" type="submit" class="btn btn-danger">Удалить</button>
+                    </form>
+                </td>
+            </tr>
+        {%endfor%}
+        <tr>
+            <form method="POST" action="create">
+                <td><input placeholder="Login" name="login"></td>
+                <td><input placeholder="Password" name="password"></td>
+                <td>
+                    <select name="role" class="form-select" aria-label="Пример выбора по умолчанию">
+                        <option selected>Роль</option>
+                        <option value="root">root</option>
+                        <option value="wr">wr</option>
+                        <option value="r">r</option>
+                    </select>
+                </td>
+                <td><button name ="create_btn" type="submit" class="btn btn-primary">Создать</button></td>
+            </form>
+        </tr>
+    </tbody>
+</table>
+{%endblock%}
+
