@@ -10,6 +10,7 @@ from natasha import (
     DatesExtractor, AddrExtractor)
 import hashlib
 import sqlite3
+from docx import Document
 
 segmenter = Segmenter()
 morph_vocab = MorphVocab()
@@ -21,8 +22,9 @@ name_ex = NamesExtractor(morph_vocab)
 ad_ex = AddrExtractor(morph_vocab)
 date_ex = DatesExtractor(morph_vocab)
 
-conn = sqlite3.connect('users.db', check_same_thread=False)
+conn = sqlite3.connect('withOutFace.db', check_same_thread=False)
 cur = conn.cursor()
+
 
 def encrypt(line, change: int):
     texts = hashlib.md5(line.encode()).hexdigest()
@@ -75,18 +77,15 @@ def markup(text, filename):
     for i in replaceDic:
         text = text.replace(i[0], i[2])
 
-    with open('upload/test/finaly.txt', 'w') as finaly:
-        finaly.write(text)
+    doc = Document('upload/fin.docx')
+    paragraphs = doc.paragraphs
+    for i in paragraphs:
+        i.text = None
+    doc.add_paragraph(text)
+    doc.save('upload/fin.docx')
     # with open('upload/test/keys.txt', 'w') as key:
     #     keys = ''
     #     for j in replaceDic:
     #         keys = keys + j[0] + '|' + j[1] + '|' + j[2] + '\n'
     #     key.write(keys)
-    for j in replaceDic:
-        a = hashlib.md5(filename.encode()).hexdigest()
-        b = '-'
-        c = j[0]
-        sql = "INSERT INTO data(name_doc, hash, word) VALUES(" + "'" + a + "'" + ', ' + "'" + b + "'" + ', ' + "'" + c + "'" + ");"
-        cur.execute(sql)
-        conn.commit()
     return text

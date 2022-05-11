@@ -1,3 +1,5 @@
+import time
+
 from flask import Flask, render_template, request, session, send_from_directory, redirect, url_for
 import sqlite3
 import hashlib
@@ -6,6 +8,8 @@ import docx2txt
 import textract
 import markText
 import base
+import idFile
+from datetime import date
 
 from werkzeug.utils import secure_filename
 import os
@@ -14,10 +18,10 @@ import decrypt
 
 app = Flask(__name__, template_folder="templates")
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
-conn = sqlite3.connect('users.db', check_same_thread=False)
+conn = sqlite3.connect('withOutFace.db', check_same_thread=False)
 cur = conn.cursor()
 
-UPLOAD_FOLDER = 'upload/test'
+UPLOAD_FOLDER = 'upload'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 ALLOWED_EXTENSIONS = set(['txt', 'doc', 'docx'])
 
@@ -62,20 +66,27 @@ def upload():
     text_mark = ''
     if request.method == 'POST':
         file = request.files['file']
-        if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            try:
-                text = docx2txt.process('upload/test/' + filename)
-                text_mark = markText.one(text)
-                text_encr = base.markup(text, filename)
-            except:
-                text = textract.process("upload/test/" + filename)
-                text = text.decode(encoding='utf-8')
-                text_mark = markText.one(text)
-                text_encr = base.markup(text, filename)
-            finally:
-                pass
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], 'one.doc'))
+        key = idFile.add_id_files('one.doc')
+        key = "'" + key[6:len(key)-3] + "'"
+        userId = "'"+str(session['id'])+"'"
+        action = "'" + 'обезличивание' + "'"
+        data = "'"+str(date.today())+"'"
+        sql = "INSERT INTO process(userId, secretFile, action, data) VALUES ("+userId+', '+key+', '+action+', '+data+");"
+        cur.execute(sql)
+        conn.commit()
+        filename = 'fin.docx'
+        try:
+            text = docx2txt.process('upload/' + filename)
+            text_mark = markText.one(text)
+            text_encr = base.markup(text, filename)
+        except:
+            text = textract.process("upload/" + filename)
+            text = text.decode(encoding='utf-8')
+            text_mark = markText.one(text)
+            text_encr = base.markup(text, filename)
+        finally:
+            pass
         return render_template('encrypt.html', content=text_mark, cryptoTxt=text_encr)
 
 
@@ -102,7 +113,7 @@ def decrypt_f():
 
 @app.route('/download/<filename>')
 def download(filename):
-    return send_from_directory('upload/test', filename, as_attachment=True)
+    return send_from_directory('upload/', filename, as_attachment=True)
 
 
 @app.route('/encrypt', methods=('GET', 'POST'))
