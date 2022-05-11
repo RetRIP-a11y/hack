@@ -1,6 +1,6 @@
 {% extends 'base.html'%}
 
-{%block title%}Дешифрование{%endblock%}
+{%block title%}Деобезличивание{%endblock%}
 
 {%block content%}
 <form class="send_form" action="/decrypt_f" enctype="multipart/form-data" method="POST">
@@ -9,7 +9,7 @@
 </form>
 
 Скачать файл:
-<a href="{{ url_for('download', filename='finaly_decrypt.txt') }}">Скачать</a>
+<a href="{{ url_for('download', filename='decrypt.docx') }}">Скачать</a>
 
 <div class="crypto">
     <div class="textarea" contenteditable ><per>{{content|safe}}</per></div>

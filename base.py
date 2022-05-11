@@ -88,4 +88,4 @@ def markup(text, filename):
     #     for j in replaceDic:
     #         keys = keys + j[0] + '|' + j[1] + '|' + j[2] + '\n'
     #     key.write(keys)
-    return text
+    return text, replaceDic

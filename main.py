@@ -87,34 +87,53 @@ def upload():
             text_encr = base.markup(text, filename)
         finally:
             pass
-        return render_template('encrypt.html', content=text_mark, cryptoTxt=text_encr)
+        for string in text_encr[1]:
+            keyFile = key
+            hash = "'" + str(string[1]) + "'"
+            mark = "'" + str(string[2]) + "'"
+            word = "'" + str(string[0]) + "'"
+            sql1 = "INSERT INTO hashAndMark(keyFile, hash, mark) VALUES (" + keyFile + ', ' + hash + ', ' + mark + ");"
+            cur.execute(sql1)
+            sql2 = "INSERT INTO data(string, keyFaile) VALUES (" + word +', ' + keyFile +  ");"
+            cur.execute(sql2)
+            conn.commit()
+
+        return render_template('encrypt.html', content=text_mark, cryptoTxt=text_encr[0])
 
 
 @app.route('/decrypt_f', methods=('GET', 'POST'))
 def decrypt_f():
-    text_encr = ''
-    text_mark = ''
+    text_decrypt = ''
+    text = ''
     if request.method == 'POST':
         file = request.files['file']
-        if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            try:
-                text = docx2txt.process('upload/test/' + filename)
-                text_decrypt = decrypt.decrypt(text)
-            except:
-                text = textract.process("upload/test/" + filename)
-                text = text.decode(encoding='utf-8')
-                text_decrypt = decrypt.decrypt(text)
-            finally:
-                pass
-        return render_template('encrypt.html', content=text, cryptoTxt=text_decrypt)
+        filename = 'decrypt.docx'
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        key_file = idFile.show_id_files()
+        key = "'" + key_file + "'"
+        userId = "'" + str(session['id']) + "'"
+        action = "'" + 'деобезличивание' + "'"
+        data = "'" + str(date.today()) + "'"
+        sql = "INSERT INTO process(userId, secretFile, action, data) VALUES (" + userId + ', ' + key + ', ' + action + ', ' + data + ");"
+        cur.execute(sql)
+        conn.commit()
+        key_file = idFile.show_id_files()
+
+        try:
+            text = docx2txt.process('upload/' + filename)
+            text_decrypt = decrypt.decrypts(text, key_file)
+        except:
+            text = textract.process("upload/" + filename)
+            text = text.decode(encoding='utf-8')
+            text_decrypt = decrypt.decrypts(text, key_file)
+        finally:
+            pass
+        return render_template('decrypt.html', content=text, cryptoTxt=text_decrypt)
 
 
 @app.route('/download/<filename>')
 def download(filename):
     return send_from_directory('upload/', filename, as_attachment=True)
-
 
 @app.route('/encrypt', methods=('GET', 'POST'))
 def encrypt():
@@ -125,7 +144,7 @@ def encrypt():
 
 
 @app.route('/decrypt', methods=('GET', 'POST'))
-def decrypt():
+def decrypting():
     if 'auth' in session:
         return render_template('decrypt.html')
     else:
@@ -191,4 +210,4 @@ def logout():
 
 
 if __name__ == "__main__":
-    app.run(debug=True, port=1234)
+    app.run(debug=False, port=8080)

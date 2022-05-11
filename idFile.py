@@ -34,8 +34,6 @@ def add_id_files(documents):
         zip_file.extractall('./out/')
 
     #########################################
-    if 'customXml' not in os.listdir('./out'):
-        os.mkdir('./out/customXml')
     with open('out/word/theme/theme1.xml', 'a') as f:
         key = '\n\n<!--' + generate_alphanum_crypt_string(64) + '-->'
         f.write(key)
@@ -62,11 +60,11 @@ def add_id_files(documents):
 
 
 def show_id_files():
-    with zipfile.ZipFile('upload/fin.docx', 'r') as z:
+    with zipfile.ZipFile('upload/decrypt.docx', 'r') as z:
         filesInArchive = z.infolist()
         for fileArch in filesInArchive:
-            if fileArch.filename == 'customXml/item1.xml':
+            if fileArch.filename == 'word/theme/theme1.xml':
                 with z.open(fileArch.filename) as secret:
                     line = secret.read().decode('utf-8').split('\n')
                     line = line[len(line)-1]
-                    print(line)
+                    return line[4:len(line)-3]
