@@ -1,49 +1,99 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <style>
-    .form form {
-      width: 300px;
-      margin: 0 auto;
-      padding-top: 20px;
+    <title>WithOutFace</title>
+    <link rel="stylesheet" href="static/logo.css">
+    <link rel="stylesheet" href="static/index.css">
+    <link rel="stylesheet" href="static/fonts.css">
+    <link rel="stylesheet" href="static/aplication.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+<style>
+    table{
+    font-size: 1.3rem;
     }
-
-    .form {
-      padding-top: 270px;
-    }
-  </style>
-  <meta charset="UTF-8">
-  <title>Title</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+</style>
 </head>
 <body>
-
-
-<div class="form">
-    <form class="form-horizontal" role="form" method="POST" action="/check">
-        <div class="form-group">
-            <div class="form-group">
-                <div class="col-sm-10">
-                    <input type="text" class="form-control" placeholder="Логин" name="login">
-                </div>
+    <div id="header-1">
+        <div class="container">
+            <div class="header-gerb">
+                <div class="header-gerb__inner"></div>
+                <img class="mvd_logo" src="static/mvd_logo.png">
             </div>
-            <div class="form-group">
-                <div class="col-sm-10">
-                    <input type="password" class="form-control" placeholder="Пароль" name="password">
-                </div>
+
+<!--            <a class="header-logo" href="static/mvd_logo.png">-->
+                <div class="header-logo__icon">
+            <div class="icon logo"></div>
             </div>
-            <div class="form-group">
-                <div class="col-sm-offset-2 col-sm-10">
-                    <button type="submit" class="btn btn-primary">Войти</button>
+                <div class="header-logo__info">
+                    <div class="header-logo__info-title">МВД России</div>
+                    <div class="header-logo__info-text">Портал обезличивания персональных данных</div>
                 </div>
+<!--            </a>-->
+
+            <div class="header-buttons">
+                <a class="header-btn" href="/auth">
+<!--                    <div class="header-btn__icon"></div>-->
+                Войти
+                </a>
             </div>
         </div>
-    </form>
-</div>
+    </div>
+
+    <br>
+    <br>
+    <h1 align="center"><pre>Автоматизированная система защиты персональных <br>данных от несанкционированного использования</pre></h1>
+    <br>
+    <br>
+    <div class="container">
+        <h4>Состав команды:</h4>
+    <table class="table table-striped">
+      <tbody>
+        <tr>
+          <td> капитан команды </td>
+            <td></td>
+          <td> курсант Р18К1 взвода РТФ </td>
+            <td></td>
+          <td> М.Х. Султанахмедов </td>
+        </tr>
+
+        <tr>
+          <td> разработчик </td>
+            <td></td>
+          <td> курсант Р18К1 взвода РТФ </td>
+            <td></td>
+          <td> М.Д. Калмыков </td>
+        </tr>
+
+         <tr>
+          <td> разработчик </td>
+             <td></td>
+          <td> курсант Р19Б1 взвода РТФ </td>
+            <td></td>
+          <td> В.А. Шванов </td>
+        </tr>
+
+        <tr>
+          <td> проектировщик </td>
+            <td></td>
+          <td> курсант Р19Б1 взвода РТФ </td>
+            <td></td>
+          <td> М.А. Тарабрин </td>
+        </tr>
+
+        <tr>
+          <td> дизайнер, тестировщик </td>
+            <td></td>
+          <td> курсант Р18К1 взвода РТФ </td>
+            <td></td>
+          <td> В.Д. Стутко </td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
 
 <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-
 </body>
 </html>

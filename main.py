@@ -37,6 +37,11 @@ def index():
     session.pop('auth', None)
     return render_template('index.html')
 
+@app.route('/auth', methods=('GET', 'POST'))
+def auth():
+    # session['auth'] = False
+    session.pop('auth', None)
+    return render_template('auth.html')
 
 @app.route('/check', methods=('GET', 'POST'))
 def check():
@@ -145,10 +150,10 @@ def encrypt():
 
 @app.route('/decrypt', methods=('GET', 'POST'))
 def decrypting():
-    if 'auth' in session:
+    if 'auth' in session and session['role'] != 'r':
         return render_template('decrypt.html')
     else:
-        return redirect(url_for('index'))
+        return redirect(url_for('encrypt'))
 
 
 
@@ -162,21 +167,21 @@ def page():
 
 @app.route('/root', methods=('GET', 'POST'))
 def root():
-    if 'auth' in session:
+    if 'auth' in session and session['role'] == 'root':
         return render_template('root.html')
     else:
-        return redirect(url_for('index'))
+        return redirect(url_for('encrypt'))
 
 
 @app.route('/users', methods=('GET', 'POST'))
 def users():
-    if 'auth' in session:
+    if 'auth' in session and session['role'] == 'root':
         sql = "SELECT * FROM users"
         cur.execute(sql)
         result = cur.fetchall()
         return render_template('users.html', content=result)
     else:
-        return redirect(url_for('index'))
+        return redirect(url_for('encrypt'))
 
 
 @app.route('/delete', methods=('GET', 'POST'))
@@ -187,6 +192,8 @@ def delete():
         cur.execute(sql)
         conn.commit()
         return redirect(url_for('users'))
+    else:
+        return redirect(url_for('encrypt'))
 
 
 @app.route('/create', methods=('GET', 'POST'))
@@ -199,9 +206,11 @@ def create():
         cur.execute(sql)
         conn.commit()
         return redirect(url_for('users'))
+    else:
+        return redirect(url_for('encrypt'))
 
 
-@app.route('/logout', methods=('GET', 'POST'))
+@app.route('/logout')
 def logout():
     # удаляем имя пользователя из сеанса, если оно есть
     session.pop('auth', None)
@@ -210,4 +219,4 @@ def logout():
 
 
 if __name__ == "__main__":
-    app.run(debug=False, port=8080)
+    app.run(host='0.0.0.0', debug=False, port=1234)

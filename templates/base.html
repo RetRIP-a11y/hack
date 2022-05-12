@@ -27,32 +27,57 @@
     .send_form{
     margin-top:10px;
     }
+    a {
+    font-size:14px;
+    }
   </style>
+    <link rel="stylesheet" href="static/index.css">
+    <link rel="stylesheet" href="static/fonts.css">
+    <link rel="stylesheet" href="static/aplication.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 </head>
 <body>
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+<nav class="navbar navbar-expand-lg navbar-dark" id="header-1">
     <a class="navbar-brand" href="#">Обезличивание</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarText">
-        <form action="/encrypt" method="POST">
-            <button class="dropdown-item" type="submit">Обезличить</button>
-        </form>
-        {% if session['role'] != 'r' %}
-        <form action="/decrypt" method="POST">
-            <button class="dropdown-item" type="submit">Деобезличить</button>
-        </form>
-        {%endif%}
-        {% if session['role'] == 'root' %}
-        <form action="/users" method="POST">
-            <button class="dropdown-item" type="submit">Управление пользователями</button>
-        </form>
-        {%endif%}
-        <form method="POST" action="/logout">
-            <button class="dropdown-item" type="submit">Выход</button>
-        </form>
+        <ul class="navbar-nav mr-auto">
+            <li class="navbar-brand">
+                <a class="nav-link" href="/encrypt">Обезличить</a>
+            </li>
+            {% if session['role'] != 'r' %}
+            <li class="navbar-brand">
+                <a class="nav-link" href="/decrypt">Деобезличить</a>
+            </li>
+            {%endif%}
+            {% if session['role'] == 'root' %}
+            <li class="navbar-brand">
+                <a class="nav-link" href="/users">Управление пользователями</a>
+            </li>
+            {%endif%}
+            <li class="navbar-brand">
+                <a class="nav-link" href="/logout">Выход</a>
+            </li>
+        </ul>
+
+<!--        <form action="/encrypt" method="POST">-->
+<!--            <button class="dropdown-item" type="submit">Обезличить</button>-->
+<!--        </form>-->
+<!--        {% if session['role'] != 'r' %}-->
+<!--        <form action="/decrypt" method="POST">-->
+<!--            <button class="dropdown-item" type="submit">Деобезличить</button>-->
+<!--        </form>-->
+<!--        {%endif%}-->
+<!--        {% if session['role'] == 'root' %}-->
+<!--        <form action="/users" method="POST">-->
+<!--            <button class="dropdown-item" type="submit">Управление пользователями</button>-->
+<!--        </form>-->
+<!--        {%endif%}-->
+<!--        <form method="POST" action="/logout">-->
+<!--            <button class="dropdown-item" type="submit">Выход</button>-->
+<!--        </form>-->
 
     </div>
 </nav>
