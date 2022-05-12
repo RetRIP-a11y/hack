@@ -1,0 +1,5 @@
+Flask==2.1.1
+docx2txt==0.8
+textract==1.6.5
+natasha @ git+https://github.com/natasha/natasha.git@990886ff355a7c98071a7c7fdb850f217962b076
+python-docx==0.8.11
