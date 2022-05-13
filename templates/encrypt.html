@@ -4,16 +4,50 @@
 
 {%block content%}
 
-<form class="send_form" action="/upload_f" enctype="multipart/form-data" method="POST">
-   <p><input type="file" name="file">
-   <input type="submit" value="Отправить"></p>
+
+<form action="/upload_f" enctype="multipart/form-data" method="POST">
+    <p>
+        <input type="file" name="file">
+        <input type="submit" value="Обработать файл">
+    </p>
 </form>
 
-Скачать файл:
-<a href="{{ url_for('download', filename='fin.docx') }}">Скачать</a>
 
-<div class="crypto">
-    <div class="textarea" contenteditable ><per>{{content|safe}}</per></div>
-    <div class="textarea" contenteditable ><per>{{cryptoTxt|safe}}</per></div>
+
+<div class="textarea" contenteditable ><per>{{content|safe}}</per></div>
+<div class="textarea" contenteditable ><per id="block_id" style="display: none;">{{cryptoTxt|safe}}</per></div>
+
+
+
+
+<div>
+    <a href="javascript:void(0)" onclick="showHide('block_id')">Обезличить</a>
 </div>
+<div>
+    <a href="{{ url_for('download', filename='fin.docx') }}">Сохранить в файл</a>
+</div>
+
+
+
+<script type="text/javascript">
+            /**
+            * Функция Скрывает/Показывает блок
+            * @author ox2.ru дизайн студия
+            **/
+            function showHide(element_id) {
+                //Если элемент с id-шником element_id существует
+                if (document.getElementById(element_id)) {
+                    //Записываем ссылку на элемент в переменную obj
+                    var obj = document.getElementById(element_id);
+                    //Если css-свойство display не block, то:
+                    sleep(2000);
+                    if (obj.style.display != "block") {
+                        obj.style.display = "block"; //Показываем элемент
+                    }
+                    else obj.style.display = "none"; //Скрываем элемент
+                }
+                //Если элемент с id-шником element_id не найден, то выводим сообщение
+<!--                else alert("Элемент с id: " + element_id + " не найден!");-->
+            }
+        </script>
 {%endblock%}

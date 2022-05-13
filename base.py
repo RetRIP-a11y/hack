@@ -11,6 +11,7 @@ from natasha import (
 import hashlib
 import sqlite3
 from docx import Document
+import re
 
 segmenter = Segmenter()
 morph_vocab = MorphVocab()
@@ -76,6 +77,8 @@ def markup(text, filename):
 
     for i in replaceDic:
         text = text.replace(i[0], i[2])
+
+    # a = re.search(r'\w\.\w\. [\n]\w{,15}', text)
 
     doc = Document('upload/fin.docx')
     paragraphs = doc.paragraphs

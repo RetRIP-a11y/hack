@@ -58,7 +58,7 @@ def check():
             session['role'] = role
             session['id'] = id
             if role == 'root':
-                return redirect(url_for('root'))
+                return redirect(url_for('encrypt'))
             else:
                 return redirect(url_for('encrypt'))
         else:
@@ -77,7 +77,7 @@ def upload():
         userId = "'"+str(session['id'])+"'"
         action = "'" + 'обезличивание' + "'"
         data = "'"+str(date.today())+"'"
-        sql = "INSERT INTO process(userId, secretFile, action, data) VALUES ("+userId+', '+key+', '+action+', '+data+");"
+        sql = "INSERT INTO process(id_users, key_file, action, date) VALUES ("+userId+', '+key+', '+action+', '+data+");"
         cur.execute(sql)
         conn.commit()
         filename = 'fin.docx'
@@ -97,9 +97,9 @@ def upload():
             hash = "'" + str(string[1]) + "'"
             mark = "'" + str(string[2]) + "'"
             word = "'" + str(string[0]) + "'"
-            sql1 = "INSERT INTO hashAndMark(keyFile, hash, mark) VALUES (" + keyFile + ', ' + hash + ', ' + mark + ");"
+            sql1 = "INSERT INTO hash_and_mark(id_process, key_file, hash, mark) VALUES (" + str(000)  + ', ' + keyFile + ', ' + hash + ', ' + mark + ");"
             cur.execute(sql1)
-            sql2 = "INSERT INTO data(string, keyFaile) VALUES (" + word +', ' + keyFile +  ");"
+            sql2 = "INSERT INTO data(id_process, string, key_file) VALUES ("+ "'-'" + ', ' + word + ', ' + keyFile +  ");"
             cur.execute(sql2)
             conn.commit()
 
@@ -119,7 +119,7 @@ def decrypt_f():
         userId = "'" + str(session['id']) + "'"
         action = "'" + 'деобезличивание' + "'"
         data = "'" + str(date.today()) + "'"
-        sql = "INSERT INTO process(userId, secretFile, action, data) VALUES (" + userId + ', ' + key + ', ' + action + ', ' + data + ");"
+        sql = "INSERT INTO process(id_users, key_file, action, date) VALUES (" + userId + ', ' + key + ', ' + action + ', ' + data + ");"
         cur.execute(sql)
         conn.commit()
         key_file = idFile.show_id_files()
@@ -219,4 +219,4 @@ def logout():
 
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', debug=False, port=1234)
+    app.run(host='0.0.0.0', debug=True, port=1234)

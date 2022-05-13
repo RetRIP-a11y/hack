@@ -11,11 +11,11 @@ def decrypts(text, keyFile):
     W = []
     SUM = []
     key = "'" + keyFile + "'"
-    sql1 = "SELECT hash, mark FROM hashAndMark WHERE keyFile=" + key + ";"
+    sql1 = "SELECT hash, mark FROM hash_and_mark WHERE key_file=" + key + ";"
     res1 = cur.execute(sql1)
     for r1 in res1:
         HM.append([r1[0], r1[1]])
-    sql2 = "SELECT string FROM data WHERE keyFaile=" + key + ";"
+    sql2 = "SELECT string FROM data WHERE key_file=" + key + ";"
     res2 = cur.execute(sql2)
     for r2 in res2:
         line = base.encrypt(r2[0], 3)
