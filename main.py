@@ -37,11 +37,13 @@ def index():
     session.pop('auth', None)
     return render_template('index.html')
 
+
 @app.route('/auth', methods=('GET', 'POST'))
 def auth():
     # session['auth'] = False
     session.pop('auth', None)
     return render_template('auth.html')
+
 
 @app.route('/check', methods=('GET', 'POST'))
 def check():
@@ -73,11 +75,11 @@ def upload():
         file = request.files['file']
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], 'one.doc'))
         key = idFile.add_id_files('one.doc')
-        key = "'" + key[6:len(key)-3] + "'"
-        userId = "'"+str(session['id'])+"'"
+        key = "'" + key[6:len(key) - 3] + "'"
+        userId = "'" + str(session['id']) + "'"
         action = "'" + 'обезличивание' + "'"
-        data = "'"+str(date.today())+"'"
-        sql = "INSERT INTO process(id_users, key_file, action, date) VALUES ("+userId+', '+key+', '+action+', '+data+");"
+        data = "'" + str(date.today()) + "'"
+        sql = "INSERT INTO process(id_users, key_file, action, date) VALUES (" + userId + ', ' + key + ', ' + action + ', ' + data + ");"
         cur.execute(sql)
         conn.commit()
         filename = 'fin.docx'
@@ -97,9 +99,10 @@ def upload():
             hash = "'" + str(string[1]) + "'"
             mark = "'" + str(string[2]) + "'"
             word = "'" + str(string[0]) + "'"
-            sql1 = "INSERT INTO hash_and_mark(id_process, key_file, hash, mark) VALUES (" + str(000)  + ', ' + keyFile + ', ' + hash + ', ' + mark + ");"
+            sql1 = "INSERT INTO hash_and_mark(id_process, key_file, hash, mark) VALUES (" + str(
+                000) + ', ' + keyFile + ', ' + hash + ', ' + mark + ");"
             cur.execute(sql1)
-            sql2 = "INSERT INTO data(id_process, string, key_file) VALUES ("+ "'-'" + ', ' + word + ', ' + keyFile +  ");"
+            sql2 = "INSERT INTO data(id_process, string, key_file) VALUES (" + "'-'" + ', ' + word + ', ' + keyFile + ");"
             cur.execute(sql2)
             conn.commit()
 
@@ -140,6 +143,7 @@ def decrypt_f():
 def download(filename):
     return send_from_directory('upload/', filename, as_attachment=True)
 
+
 @app.route('/encrypt', methods=('GET', 'POST'))
 def encrypt():
     if 'auth' in session:
@@ -154,7 +158,6 @@ def decrypting():
         return render_template('decrypt.html')
     else:
         return redirect(url_for('encrypt'))
-
 
 
 @app.route('/page', methods=('GET', 'POST'))
@@ -215,7 +218,6 @@ def logout():
     # удаляем имя пользователя из сеанса, если оно есть
     session.pop('auth', None)
     return render_template('index.html')
-
 
 
 if __name__ == "__main__":

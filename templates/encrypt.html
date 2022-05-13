@@ -4,27 +4,28 @@
 
 {%block content%}
 
-
+<br>
 <form action="/upload_f" enctype="multipart/form-data" method="POST">
     <p>
         <input type="file" name="file">
-        <input type="submit" value="Обработать файл">
+        <input class="button" type="submit" value="Обработать файл">
     </p>
 </form>
 
 
-
-<div class="textarea" contenteditable ><per>{{content|safe}}</per></div>
-<div class="textarea" contenteditable ><per id="block_id" style="display: none;">{{cryptoTxt|safe}}</per></div>
-
-
-
-
-<div>
-    <a href="javascript:void(0)" onclick="showHide('block_id')">Обезличить</a>
+<div class="content">
+    <div class="textarea" contenteditable ><per>{{content|safe}}</per></div>
+    <div class="textarea" contenteditable ><per id="block_id" style="display: none;">{{cryptoTxt|safe}}</per></div>
 </div>
-<div>
-    <a href="{{ url_for('download', filename='fin.docx') }}">Сохранить в файл</a>
+
+<br>
+<div class="content dwn-btn">
+    <div>
+        <a class="button" id="dwn-btn" href="javascript:void(0)" onclick="showHide('block_id')">Обезличить</a>
+    </div>
+    <div>
+        <a class="button" id="dwn-btn" href="{{ url_for('download', filename='fin.docx') }}">Сохранить в файл</a>
+    </div>
 </div>
 
 
