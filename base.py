@@ -75,6 +75,20 @@ def markup(text, filename):
         replaceDic.append([line, result, 'LOC' + str(i_addr)])
         i_addr += 1
 
+    try:
+        i_other = 0
+        sums = [r"[А-Я].{3,10} \w\.\w\.", r"\w\.\w\. \w{3,10}", r"\+\d{11}", r"8\d{10}", r"8-\d{3}-\d{3}-\d{2}-\d{2}",
+                r"\+7\(\d{3}\)\d{7}", r"\+7 \(\d{3}\) \d{3}-\d{2}-\d{2}"]
+        for qwe in sums:
+            line = re.findall(qwe, text)[0]
+            result = encrypt(line, 3)
+            replaceDic.append([line, result, 'OTH' + str(i_addr)])
+            i_other += 1
+    except:
+        pass
+
+
+
     for i in replaceDic:
         text = text.replace(i[0], i[2])
 
@@ -85,7 +99,7 @@ def markup(text, filename):
     for i in paragraphs:
         i.text = None
     doc.add_paragraph(text)
-    doc.save('upload/fin.docx')
+    doc.save('upload/' + filename)
     # with open('upload/test/keys.txt', 'w') as key:
     #     keys = ''
     #     for j in replaceDic:

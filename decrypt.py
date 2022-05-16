@@ -6,7 +6,7 @@ conn = sqlite3.connect('withOutFace.db', check_same_thread=False)
 cur = conn.cursor()
 
 
-def decrypts(text, keyFile):
+def decrypts(text, keyFile, filename):
     HM = []
     W = []
     SUM = []
@@ -31,5 +31,5 @@ def decrypts(text, keyFile):
 
     doc = Document()
     doc.add_paragraph(text)
-    doc.save('upload/decrypt.docx')
+    doc.save('upload/'+filename)
     return text

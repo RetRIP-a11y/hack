@@ -5,7 +5,7 @@
 {%block content%}
 
 <br>
-<form action="/upload_f" enctype="multipart/form-data" method="POST">
+<form action="/decrypt_f" enctype="multipart/form-data" method="POST">
     <p>
         <input type="file" name="file">
         <input class="button" type="submit" value="Обработать файл">
@@ -21,14 +21,13 @@
 <br>
 <div class="content dwn-btn">
     <div>
-        <a class="button" id="dwn-btn" href="javascript:void(0)" onclick="showHide('block_id')">Обезличить</a>
+        <a class="button" id="dwn-btn" href="javascript:void(0)" onclick="showHide('block_id')">Деобезличить</a>
     </div>
     <div>
         <a class="button" id="dwn-btn" href="{{ url_for('download', filename='decrypt.docx') }}">Сохранить в файл</a>
     </div>
 </div>
 
-<script type="text/javascript">
 <script type="text/javascript">
             /**
             * Функция Скрывает/Показывает блок

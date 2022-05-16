@@ -69,42 +69,44 @@ def check():
 
 @app.route('/upload_f', methods=('GET', 'POST'))
 def upload():
-    text_encr = ''
+    text_encr = ['', '']
     text_mark = ''
     if request.method == 'POST':
         file = request.files['file']
-        file.save(os.path.join(app.config['UPLOAD_FOLDER'], 'one.doc'))
-        key = idFile.add_id_files('one.doc')
-        key = "'" + key[6:len(key) - 3] + "'"
-        userId = "'" + str(session['id']) + "'"
-        action = "'" + 'обезличивание' + "'"
-        data = "'" + str(date.today()) + "'"
-        sql = "INSERT INTO process(id_users, key_file, action, date) VALUES (" + userId + ', ' + key + ', ' + action + ', ' + data + ");"
-        cur.execute(sql)
-        conn.commit()
-        filename = 'fin.docx'
-        try:
-            text = docx2txt.process('upload/' + filename)
-            text_mark = markText.one(text)
-            text_encr = base.markup(text, filename)
-        except:
-            text = textract.process("upload/" + filename)
-            text = text.decode(encoding='utf-8')
-            text_mark = markText.one(text)
-            text_encr = base.markup(text, filename)
-        finally:
-            pass
-        for string in text_encr[1]:
-            keyFile = key
-            hash = "'" + str(string[1]) + "'"
-            mark = "'" + str(string[2]) + "'"
-            word = "'" + str(string[0]) + "'"
-            sql1 = "INSERT INTO hash_and_mark(id_process, key_file, hash, mark) VALUES (" + str(
-                000) + ', ' + keyFile + ', ' + hash + ', ' + mark + ");"
-            cur.execute(sql1)
-            sql2 = "INSERT INTO data(id_process, string, key_file) VALUES (" + "'-'" + ', ' + word + ', ' + keyFile + ");"
-            cur.execute(sql2)
+        if str(file).split("'")[1] != '':
+            session['filename_encr'] = str(file).split("'")[1][:len(str(file).split("'")[1])-3]+'_imper.docx'
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], 'one.doc'))
+            key = idFile.add_id_files('one.doc')
+            key = "'" + key[6:len(key) - 3] + "'"
+            userId = "'" + str(session['id']) + "'"
+            action = "'" + 'обезличивание' + "'"
+            data = "'" + str(date.today()) + "'"
+            sql = "INSERT INTO process(id_users, key_file, action, date) VALUES (" + userId + ', ' + key + ', ' + action + ', ' + data + ");"
+            cur.execute(sql)
             conn.commit()
+            filename = 'fin.docx'
+            try:
+                text = docx2txt.process('upload/' + filename)
+                text_mark = markText.one(text)
+                text_encr = base.markup(text, session['filename_encr'])
+            except:
+                text = textract.process("upload/" + filename)
+                text = text.decode(encoding='utf-8')
+                text_mark = markText.one(text)
+                text_encr = base.markup(text, session['filename_encr'])
+            finally:
+                pass
+            for string in text_encr[1]:
+                keyFile = key
+                hash = "'" + str(string[1]) + "'"
+                mark = "'" + str(string[2]) + "'"
+                word = "'" + str(string[0]) + "'"
+                sql1 = "INSERT INTO hash_and_mark(id_process, key_file, hash, mark) VALUES (" + str(
+                    000) + ', ' + keyFile + ', ' + hash + ', ' + mark + ");"
+                cur.execute(sql1)
+                sql2 = "INSERT INTO data(id_process, string, key_file) VALUES (" + "'-'" + ', ' + word + ', ' + keyFile + ");"
+                cur.execute(sql2)
+                conn.commit()
 
         return render_template('encrypt.html', content=text_mark, cryptoTxt=text_encr[0])
 
@@ -115,33 +117,42 @@ def decrypt_f():
     text = ''
     if request.method == 'POST':
         file = request.files['file']
-        filename = 'decrypt.docx'
-        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        key_file = idFile.show_id_files()
-        key = "'" + key_file + "'"
-        userId = "'" + str(session['id']) + "'"
-        action = "'" + 'деобезличивание' + "'"
-        data = "'" + str(date.today()) + "'"
-        sql = "INSERT INTO process(id_users, key_file, action, date) VALUES (" + userId + ', ' + key + ', ' + action + ', ' + data + ");"
-        cur.execute(sql)
-        conn.commit()
-        key_file = idFile.show_id_files()
+        if str(file).split("'")[1] != '':
+            session['filename_decr'] = str(file).split("'")[1][:len(str(file).split("'")[1]) - 3] + '_origin.docx'
+            filename = 'decrypt.docx'
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            key_file = idFile.show_id_files()
+            key = "'" + key_file + "'"
+            userId = "'" + str(session['id']) + "'"
+            action = "'" + 'деобезличивание' + "'"
+            data = "'" + str(date.today()) + "'"
+            sql = "INSERT INTO process(id_users, key_file, action, date) VALUES (" + userId + ', ' + key + ', ' + action + ', ' + data + ");"
+            cur.execute(sql)
+            conn.commit()
+            key_file = idFile.show_id_files()
 
-        try:
-            text = docx2txt.process('upload/' + filename)
-            text_decrypt = decrypt.decrypts(text, key_file)
-        except:
-            text = textract.process("upload/" + filename)
-            text = text.decode(encoding='utf-8')
-            text_decrypt = decrypt.decrypts(text, key_file)
-        finally:
-            pass
+            try:
+                text = docx2txt.process('upload/' + filename)
+                text_decrypt = decrypt.decrypts(text, key_file, session['filename_decr'])
+            except:
+                text = textract.process("upload/" + filename)
+                text = text.decode(encoding='utf-8')
+                text_decrypt = decrypt.decrypts(text, key_file, session['filename_decr'])
+            finally:
+                pass
         return render_template('decrypt.html', content=text, cryptoTxt=text_decrypt)
 
 
 @app.route('/download/<filename>')
 def download(filename):
-    return send_from_directory('upload/', filename, as_attachment=True)
+        if 'filename_decr' in session and filename == 'decrypt.docx':
+            if os.path.exists('upload/' + session['filename_decr']):
+                return send_from_directory('upload/', session['filename_decr'], as_attachment=True)
+        if 'filename_encr' in session and filename == 'encrypt.docx':
+            if os.path.exists('upload/' + session['filename_encr']):
+                return send_from_directory('upload/', session['filename_encr'], as_attachment=True)
+        else:
+            return redirect(url_for('encrypt'))
 
 
 @app.route('/encrypt', methods=('GET', 'POST'))
@@ -191,7 +202,7 @@ def users():
 def delete():
     if 'auth' in session and session['role'] == 'root':
         idForDelete = request.form['dlt_btn']
-        sql = "DELETE FROM users WHERE id = " + str(idForDelete) + ";"
+        sql = "DELETE FROM users WHERE id_users = " + str(idForDelete) + ";"
         cur.execute(sql)
         conn.commit()
         return redirect(url_for('users'))
@@ -217,6 +228,8 @@ def create():
 def logout():
     # удаляем имя пользователя из сеанса, если оно есть
     session.pop('auth', None)
+    session.pop('filename_decr', None)
+    session.pop('filename_encr', None)
     return render_template('index.html')
 
 
