@@ -22,6 +22,11 @@
 <div class="content dwn-btn">
     <div>
         <a class="button" id="dwn-btn" href="javascript:void(0)" onclick="showHide('block_id')">Обезличить</a>
+        <div class="example">
+            <form action="/example" method="POST"><input class="link" name="ex1" type="submit" value="Судья Московского городского суда при помощнике судьи,"></form>
+            <form action="/example" method="POST"><input class="link" name="ex1" type="submit" value="Состав команды,"></form>
+        </div>
+            <form action="/example" method="POST"><input class="link" name="ex1" type="submit" value="Президиум Верховного Суда Российской Федерации"></form>
     </div>
     <div>
         <a class="button" id="dwn-btn" href="{{ url_for('download', filename='encrypt.docx') }}">Сохранить в файл</a>

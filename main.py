@@ -1,4 +1,7 @@
 import time
+import zipfile
+
+import magic
 
 from flask import Flask, render_template, request, session, send_from_directory, redirect, url_for
 import sqlite3
@@ -23,7 +26,8 @@ cur = conn.cursor()
 
 UPLOAD_FOLDER = 'upload'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-ALLOWED_EXTENSIONS = set(['txt', 'doc', 'docx'])
+ALLOWED_EXTENSIONS = set(['doc', 'docx'])
+mime = magic.Magic(mime=True)
 
 
 def allowed_file(filename):
@@ -74,40 +78,44 @@ def upload():
     if request.method == 'POST':
         file = request.files['file']
         if str(file).split("'")[1] != '':
-            session['filename_encr'] = str(file).split("'")[1][:len(str(file).split("'")[1])-3]+'_imper.docx'
+            session['filename_encr'] = str(file).split("'")[1][:len(str(file).split("'")[1]) - 3] + '_imper.docx'
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], 'one.doc'))
-            key = idFile.add_id_files('one.doc')
-            key = "'" + key[6:len(key) - 3] + "'"
-            userId = "'" + str(session['id']) + "'"
-            action = "'" + 'обезличивание' + "'"
-            data = "'" + str(date.today()) + "'"
-            sql = "INSERT INTO process(id_users, key_file, action, date) VALUES (" + userId + ', ' + key + ', ' + action + ', ' + data + ");"
-            cur.execute(sql)
-            conn.commit()
-            filename = 'fin.docx'
-            try:
-                text = docx2txt.process('upload/' + filename)
-                text_mark = markText.one(text)
-                text_encr = base.markup(text, session['filename_encr'])
-            except:
-                text = textract.process("upload/" + filename)
-                text = text.decode(encoding='utf-8')
-                text_mark = markText.one(text)
-                text_encr = base.markup(text, session['filename_encr'])
-            finally:
-                pass
-            for string in text_encr[1]:
-                keyFile = key
-                hash = "'" + str(string[1]) + "'"
-                mark = "'" + str(string[2]) + "'"
-                word = "'" + str(string[0]) + "'"
-                sql1 = "INSERT INTO hash_and_mark(id_process, key_file, hash, mark) VALUES (" + str(
-                    000) + ', ' + keyFile + ', ' + hash + ', ' + mark + ");"
-                cur.execute(sql1)
-                sql2 = "INSERT INTO data(id_process, string, key_file) VALUES (" + "'-'" + ', ' + word + ', ' + keyFile + ");"
-                cur.execute(sql2)
+            if mime.from_file('upload/one.doc') == 'application/msword' or mime.from_file(
+                    'upload/one.doc') == 'application/octet-stream':
+                key = idFile.add_id_files('one.doc')
+                key = "'" + key[6:len(key) - 3] + "'"
+                userId = "'" + str(session['id']) + "'"
+                action = "'" + 'обезличивание' + "'"
+                data = "'" + str(date.today()) + "'"
+                sql = "INSERT INTO process(id_users, key_file, action, date) VALUES (" + userId + ', ' + key + ', ' + action + ', ' + data + ");"
+                cur.execute(sql)
                 conn.commit()
-
+                filename = 'fin.docx'
+                try:
+                    text = docx2txt.process('upload/' + filename)
+                    text_mark = markText.one(text)
+                    text_encr = base.markup(text, session['filename_encr'])
+                except:
+                    text = textract.process("upload/" + filename)
+                    text = text.decode(encoding='utf-8')
+                    text_mark = markText.one(text)
+                    text_encr = base.markup(text, session['filename_encr'])
+                finally:
+                    pass
+                for string in text_encr[1]:
+                    keyFile = key
+                    hash = "'" + str(string[1]) + "'"
+                    mark = "'" + str(string[2]) + "'"
+                    word = "'" + str(string[0]) + "'"
+                    sql1 = "INSERT INTO hash_and_mark(id_process, key_file, hash, mark) VALUES (" + str(
+                        000) + ', ' + keyFile + ', ' + hash + ', ' + mark + ");"
+                    cur.execute(sql1)
+                    sql2 = "INSERT INTO data(id_process, string, key_file) VALUES (" + "'-'" + ', ' + word + ', ' + keyFile + ");"
+                    cur.execute(sql2)
+                    conn.commit()
+            else:
+                text_encr = ['', '']
+                text_mark = '<h2>Файл не doc или не docx</h2>'
         return render_template('encrypt.html', content=text_mark, cryptoTxt=text_encr[0])
 
 
@@ -121,38 +129,43 @@ def decrypt_f():
             session['filename_decr'] = str(file).split("'")[1][:len(str(file).split("'")[1]) - 3] + '_origin.docx'
             filename = 'decrypt.docx'
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            key_file = idFile.show_id_files()
-            key = "'" + key_file + "'"
-            userId = "'" + str(session['id']) + "'"
-            action = "'" + 'деобезличивание' + "'"
-            data = "'" + str(date.today()) + "'"
-            sql = "INSERT INTO process(id_users, key_file, action, date) VALUES (" + userId + ', ' + key + ', ' + action + ', ' + data + ");"
-            cur.execute(sql)
-            conn.commit()
-            key_file = idFile.show_id_files()
+            if mime.from_file('upload/decrypt.docx') == 'application/msword' or mime.from_file(
+                    'upload/decrypt.docx') == 'application/octet-stream':
+                key_file = idFile.show_id_files()
+                key = "'" + key_file + "'"
+                userId = "'" + str(session['id']) + "'"
+                action = "'" + 'деобезличивание' + "'"
+                data = "'" + str(date.today()) + "'"
+                sql = "INSERT INTO process(id_users, key_file, action, date) VALUES (" + userId + ', ' + key + ', ' + action + ', ' + data + ");"
+                cur.execute(sql)
+                conn.commit()
+                key_file = idFile.show_id_files()
 
-            try:
-                text = docx2txt.process('upload/' + filename)
-                text_decrypt = decrypt.decrypts(text, key_file, session['filename_decr'])
-            except:
-                text = textract.process("upload/" + filename)
-                text = text.decode(encoding='utf-8')
-                text_decrypt = decrypt.decrypts(text, key_file, session['filename_decr'])
-            finally:
-                pass
+                try:
+                    text = docx2txt.process('upload/' + filename)
+                    text_decrypt = decrypt.decrypts(text, key_file, session['filename_decr'])
+                except:
+                    text = textract.process("upload/" + filename)
+                    text = text.decode(encoding='utf-8')
+                    text_decrypt = decrypt.decrypts(text, key_file, session['filename_decr'])
+                finally:
+                    pass
+            else:
+                text = '<h2>Файл не doc или не docx</h2>'
+                text_decrypt = ''
         return render_template('decrypt.html', content=text, cryptoTxt=text_decrypt)
 
 
 @app.route('/download/<filename>')
 def download(filename):
-        if 'filename_decr' in session and filename == 'decrypt.docx':
-            if os.path.exists('upload/' + session['filename_decr']):
-                return send_from_directory('upload/', session['filename_decr'], as_attachment=True)
-        if 'filename_encr' in session and filename == 'encrypt.docx':
-            if os.path.exists('upload/' + session['filename_encr']):
-                return send_from_directory('upload/', session['filename_encr'], as_attachment=True)
-        else:
-            return redirect(url_for('encrypt'))
+    if 'filename_decr' in session and filename == 'decrypt.docx':
+        if os.path.exists('upload/' + session['filename_decr']):
+            return send_from_directory('upload/', session['filename_decr'], as_attachment=True)
+    if 'filename_encr' in session and filename == 'encrypt.docx':
+        if os.path.exists('upload/' + session['filename_encr']):
+            return send_from_directory('upload/', session['filename_encr'], as_attachment=True)
+    else:
+        return redirect(url_for('encrypt'))
 
 
 @app.route('/encrypt', methods=('GET', 'POST'))
@@ -232,6 +245,53 @@ def logout():
     session.pop('filename_encr', None)
     return render_template('index.html')
 
+
+@app.route('/example', methods=('GET', 'POST'))
+def example():
+    if request.method == 'POST':
+        file = request.form['ex1']
+        text_encr = ['', '']
+        text_mark = ''
+        session['filename_encr'] = 'test.doc'
+        if file == 'Судья Московского городского суда при помощнике судьи,':
+            os.system('cp example/ex1 upload/one.doc')
+        elif file == 'Состав команды,':
+            os.system('cp example/ex2 upload/one.doc')
+        elif file == 'Президиум Верховного Суда Российской Федерации':
+            os.system('cp example/ex3 upload/one.doc')
+        key = idFile.add_id_files('one.doc')
+        key = "'" + key[6:len(key) - 3] + "'"
+        userId = "'" + str(session['id']) + "'"
+        action = "'" + 'обезличивание' + "'"
+        data = "'" + str(date.today()) + "'"
+        sql = "INSERT INTO process(id_users, key_file, action, date) VALUES (" + userId + ', ' + key + ', ' + action + ', ' + data + ");"
+        cur.execute(sql)
+        conn.commit()
+        filename = 'fin.docx'
+        try:
+            text = docx2txt.process('upload/' + filename)
+            text_mark = markText.one(text)
+            text_encr = base.markup(text, session['filename_encr'])
+        except:
+            text = textract.process("upload/" + filename)
+            text = text.decode(encoding='utf-8')
+            text_mark = markText.one(text)
+            text_encr = base.markup(text, session['filename_encr'])
+        finally:
+            pass
+        for string in text_encr[1]:
+            keyFile = key
+            hash = "'" + str(string[1]) + "'"
+            mark = "'" + str(string[2]) + "'"
+            word = "'" + str(string[0]) + "'"
+            sql1 = "INSERT INTO hash_and_mark(id_process, key_file, hash, mark) VALUES (" + str(
+                000) + ', ' + keyFile + ', ' + hash + ', ' + mark + ");"
+            cur.execute(sql1)
+            sql2 = "INSERT INTO data(id_process, string, key_file) VALUES (" + "'-'" + ', ' + word + ', ' + keyFile + ");"
+            cur.execute(sql2)
+            conn.commit()
+
+        return render_template('encrypt.html', content=text_mark, cryptoTxt=text_encr[0])
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', debug=True, port=1234)

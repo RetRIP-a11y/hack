@@ -43,6 +43,6 @@ def one(text):
         NameList.append((j.start, j.stop, 'DATE'))
     return ', '.join(list(format_span_box_markup(text, NameList)))
 
-# text = textract.process("upload/01.01.2021.doc")
+# text = textract.process("upload/ex1.doc")
 # text = text.decode(encoding='utf-8')
 # one(text)

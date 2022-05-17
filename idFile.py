@@ -29,9 +29,11 @@ def add_id_files(documents):
     # Разархивирование докикс
     if 'out' not in os.listdir('.'):
         os.mkdir('./out')
+
     with zipfile.ZipFile('start.docx') as zip_file:
         zip_file = zipfile.ZipFile('start.docx', 'r', allowZip64 = False)
         zip_file.extractall('./out/')
+
 
     #########################################
     with open('out/word/theme/theme1.xml', 'a') as f:

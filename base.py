@@ -75,17 +75,22 @@ def markup(text, filename):
         replaceDic.append([line, result, 'LOC' + str(i_addr)])
         i_addr += 1
 
-    try:
-        i_other = 0
-        sums = [r"[А-Я].{3,10} \w\.\w\.", r"\w\.\w\. \w{3,10}", r"\+\d{11}", r"8\d{10}", r"8-\d{3}-\d{3}-\d{2}-\d{2}",
-                r"\+7\(\d{3}\)\d{7}", r"\+7 \(\d{3}\) \d{3}-\d{2}-\d{2}"]
-        for qwe in sums:
+
+    i_other = 0
+    sums = [r"[А-Я].{3,10} \w\.\w\.", r"\w\.\w\. \w{3,10}", r"\+\d{11}",
+            r"8\d{10}", r"8-\d{3}-\d{3}-\d{2}-\d{2}", r"\+7\(\d{3}\)\d{7}",
+            r"\+7 \(\d{3}\) \d{3}-\d{2}-\d{2}", r'(\b[\w.]+@+[\w.]+.+[\w.]\b)',
+            r'(\b\+?[7,8](\s*\d{3}\s*\d{3}\s*\d{2}\s*\d{2})\b)', r'(\d{4}[\s\-]*\d{4}[\s\-]*\d{4}[\s\-]*\d{4})',
+            r'(\b\w{5}\b\s\d{4}\b)', r'(\b\w{5}\b\s\d{6}\b)', r'\d{4}\D\d{6}']
+    for qwe in sums:
+        try:
             line = re.findall(qwe, text)[0]
             result = encrypt(line, 3)
-            replaceDic.append([line, result, 'OTH' + str(i_addr)])
+            replaceDic.append([line, result, 'OTH' + str(i_other)])
             i_other += 1
-    except:
-        pass
+        except:
+            i_other += 1
+
 
 
 

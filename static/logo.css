@@ -56,3 +56,16 @@ justify-content: space-between;
 #dwn-btn{
 padding:3px;
 }
+.link{
+color:blue;
+margin-top:5px;
+border: none;
+background-color: white;
+}
+.link:hover {
+text-decoration: underline;
+}
+.example{
+display:flex;
+justify-content: space-between;
+}
