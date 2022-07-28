@@ -99,7 +99,7 @@ def markup(text, filename):
 
     # a = re.search(r'\w\.\w\. [\n]\w{,15}', text)
 
-    doc = Document('upload/fin.docx')
+    doc = Document('upload/start.docx')
     paragraphs = doc.paragraphs
     for i in paragraphs:
         i.text = None

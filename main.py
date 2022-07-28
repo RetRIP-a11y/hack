@@ -90,7 +90,7 @@ def upload():
                 sql = "INSERT INTO process(id_users, key_file, action, date) VALUES (" + userId + ', ' + key + ', ' + action + ', ' + data + ");"
                 cur.execute(sql)
                 conn.commit()
-                filename = 'fin.docx'
+                filename = 'start.docx'
                 try:
                     text = docx2txt.process('upload/' + filename)
                     text_mark = markText.one(text)

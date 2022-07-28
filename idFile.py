@@ -49,7 +49,7 @@ def add_id_files(documents):
                 z.write(path[0] + '/' + file)
 
     os.system('cp new.docx /home/user/PycharmProjects/hack/upload/fin.docx')
-    os.chdir('/home/user/PycharmProjects/hack/upload')
+    os.chdir('/home/user/Загрузки/бутов/hack/upload')
     try:
         os.system('rm -r /home/user/PycharmProjects/hack/upload/out')
     except:
@@ -57,7 +57,7 @@ def add_id_files(documents):
 
     os.system('rm -r /home/user/PycharmProjects/hack/upload/'+documents)
     os.system('rm -r /home/user/PycharmProjects/hack/upload/start.docx')
-    os.chdir('/home/user/PycharmProjects/hack')
+    os.chdir('/home/user/Загрузки/бутов/hack')
     return key
 
 
